@@ -15,7 +15,7 @@
         <javac srcdir="${src.dir}" destdir="${classes.dir}"/>
     </target>
 
-    <target name="jar">
+    <target name="jar" depends="compile">
         <mkdir dir="${jar.dir}"/>
         <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
             <manifest>
@@ -24,12 +24,12 @@
         </jar>
     </target>
 
-    <target name="run">
+    <target name="run" depends="jar">
         <java jar="${jar.dir}/${ant.project.name}.jar" fork="true"/>
     </target>
 	
 	<target name="clean-build" depends="clean,jar"/>
 	
-	<target name="main" depends="clean,compile,jar,run"/>
+	<target name="main" depends="clean,run"/>
 
 </project>
