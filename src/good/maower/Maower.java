@@ -5,6 +5,6 @@ package good.maower;
  */
 public class Maower {
 	public static void main(String[] args) {
-		System.out.println("Maow!");
+		System.out.println("Good Maowning!");
 	}
 }
