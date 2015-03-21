@@ -1,4 +1,5 @@
 # Compiled classes
 *.class
+email.properties
 log/
 build/

@@ -1,6 +1,9 @@
 package good.maower;
 
 import org.apache.log4j.Logger;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;
@@ -11,40 +14,76 @@ import javax.activation.*;
  */
 public class Maower {
 	static Logger logger = Logger.getLogger(Maower.class);
+	static final String EMAIL_PROP_FILE_NAME = "email.properties";
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException, MessagingException {
 		logger.info("Good Maowning!");
 		
-		/* Email Config */
-		/* TODO: Move to a properties file */
+		/* Subscribers */
+		/* TODO: Determine dynamically */
+		logger.debug("Finding subscribers...");
 		String toAddress = "goodmaowning@gmail.com";
-		String fromAddress = "goodmaowning@gmail.com";
-		String host = "localhost";
+		
+		/* Email Config: local properties */
+		Properties emailProperties = new Properties();
+		try {
+			logger.debug("Loading email properties...");
+			loadProperties(emailProperties, EMAIL_PROP_FILE_NAME);
+		} catch (IOException e) {
+			logger.error(e);
+			throw e;
+		}
+		
+		final String fromAddress = emailProperties.getProperty("maower.email");
+		final String username = emailProperties.getProperty("maower.username");
+		final String password = emailProperties.getProperty("maower.password");
+		final String host = emailProperties.getProperty("maower.host");
+		
+		/* Email Config: content */
+		logger.debug("Generating content...");
 		String subject = "Good Maowning!";
 		String messageBody = "http://i.imgur.com/bOd2iVK.jpg";
 		
 		/* Setup SMTP */
-		Properties properties = System.getProperties();
-		properties.setProperty("mail.smtp.host", host);
-		Session session = Session.getDefaultInstance(properties);
+		logger.debug("Setting up SMTP...");
+		Session session = Session.getInstance(emailProperties,
+		  new javax.mail.Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication("username", "password");
+			}
+		  });
 		
 		/* Send the email */
+		Transport t = session.getTransport("smtps");
 		try {
 			/* Create message */
+			logger.debug("Creating email...");
 			MimeMessage message = new MimeMessage(session);
-			
-			/* Format message */
 			message.setFrom(new InternetAddress(fromAddress));
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(toAddress));
 			message.setSubject(subject);
 			message.setText(messageBody);
 			
 			/* Send the email */
+			logger.debug("Sending email...");
 			Transport.send(message);
+
 			logger.info("Email sent!");
 			
 		} catch (MessagingException e) {
-			e.printStackTrace();
+			logger.error(e);
+			throw e;
+		} finally {
+			t.close();
+		}
+	}
+	
+	private static void loadProperties(Properties propToLoad, String fileName) throws IOException {
+		InputStream inputStream = Maower.class.getClassLoader().getResourceAsStream(fileName);
+		if (inputStream != null) {
+			propToLoad.load(inputStream);
+		} else {
+			throw new FileNotFoundException("Missing properties file: " + fileName);
 		}
 	}
 }
