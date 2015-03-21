@@ -1,3 +1,5 @@
+package good.maower;
+
 /**
  * Sends emails to subscribers
  */
