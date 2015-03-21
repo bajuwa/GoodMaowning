@@ -3,8 +3,15 @@
 	<property name="build.dir" value="build"/>
 	<property name="classes.dir" value="${build.dir}/classes"/>
 	<property name="jar.dir" value="${build.dir}/jar"/>
+	<property name="lib.dir" value="lib"/>
+	<property name="log.dir" value="log"/>
 	
 	<property name="main-class" value="good.maower.Maower"/>
+	
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="**/*.jar"/>
+		<fileset dir="${src.dir}" includes="**/*.properties"/>
+	</path>
 
     <target name="clean">
         <delete dir="${build.dir}"/>
@@ -12,7 +19,10 @@
 
     <target name="compile">
         <mkdir dir="${classes.dir}"/>
-        <javac srcdir="${src.dir}" destdir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" includeantruntime="false"/>
+		<copy todir="${classes.dir}" overwrite="true">
+			<fileset dir="${src.dir}" includes="**/*.properties"/>
+		</copy>
     </target>
 
     <target name="jar" depends="compile">
@@ -25,7 +35,12 @@
     </target>
 
     <target name="run" depends="jar">
-        <java jar="${jar.dir}/${ant.project.name}.jar" fork="true"/>
+        <java fork="true" classname="${main-class}">
+			<classpath>
+				<path refid="classpath"/>
+				<path location="${jar.dir}/${ant.project.name}.jar"/>
+			</classpath>
+		</java>
     </target>
 	
 	<target name="clean-build" depends="clean,jar"/>
