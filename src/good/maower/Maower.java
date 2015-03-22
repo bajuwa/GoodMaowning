@@ -20,9 +20,12 @@ public class Maower {
 		logger.info("Good Maowning!");
 		
 		/* Subscribers */
-		/* TODO: Determine dynamically */
 		logger.debug("Finding subscribers...");
-		String toAddress = "goodmaowning@gmail.com";
+		String[] toAddresses = args;
+		if (toAddresses.length == 0) {
+			logger.warn("No subscribers found, aborting maowing");
+			return;
+		}
 		
 		/* Email Config: local properties */
 		Properties emailProperties = new Properties();
@@ -59,9 +62,13 @@ public class Maower {
 			logger.debug("Creating email...");
 			MimeMessage message = new MimeMessage(session);
 			message.setFrom(new InternetAddress(fromAddress));
-			message.addRecipient(Message.RecipientType.TO, new InternetAddress(toAddress));
 			message.setSubject(subject);
 			message.setText(messageBody);
+			
+			/* Add subscribers */
+			for (int i = 0; i < toAddresses.length; i++) {
+				message.addRecipient(Message.RecipientType.TO, new InternetAddress(toAddresses[i]));
+			}
 			
 			/* Send the email */
 			logger.debug("Sending email...");
