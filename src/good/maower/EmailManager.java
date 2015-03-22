@@ -13,19 +13,9 @@ public class EmailManager {
 	private static final String EMAIL_PROP_FILE_NAME = "email.properties";
 
 	public static void sendEmail(String[] toAddresses, String subject, String body) throws IOException, MessagingException {
-		Properties emailProperties = new Properties();
-		try {
-			logger.debug("Loading email properties...");
-			loadProperties(emailProperties, EMAIL_PROP_FILE_NAME);
-		} catch (IOException e) {
-			logger.error(e);
-			throw e;
-		}
-		
-		final String fromAddress = emailProperties.getProperty("maower.email");
-		final String username = emailProperties.getProperty("maower.username");
-		final String password = emailProperties.getProperty("maower.password");
-		final String host = emailProperties.getProperty("maower.host");
+		/* Get our local email configurations */
+		logger.debug("Loading email properties...");
+		Properties emailProperties = loadProperties(EMAIL_PROP_FILE_NAME);
 		
 		/* Setup SMTP */
 		logger.debug("Setting up SMTP...");
@@ -33,7 +23,10 @@ public class EmailManager {
 			emailProperties,
 			new javax.mail.Authenticator() {
 				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(username, password);
+					return new PasswordAuthentication(
+						emailProperties.getProperty("maower.username"), 
+						emailProperties.getProperty("maower.password")
+					);
 				}
 			}
 		);
@@ -43,7 +36,7 @@ public class EmailManager {
 			/* Create message */
 			logger.debug("Creating email...");
 			MimeMessage message = new MimeMessage(session);
-			message.setFrom(new InternetAddress(fromAddress));
+			message.setFrom(new InternetAddress(emailProperties.getProperty("maower.email")));
 			message.setSubject(subject);
 			message.setText(body);
 			
@@ -64,12 +57,16 @@ public class EmailManager {
 		}
 	}
 	
-	private static void loadProperties(Properties propToLoad, String fileName) throws IOException {
+	private static Properties loadProperties(String fileName) throws IOException {
+		Properties propToLoad = new Properties();
+		
 		InputStream inputStream = Maower.class.getClassLoader().getResourceAsStream(fileName);
 		if (inputStream != null) {
 			propToLoad.load(inputStream);
 		} else {
 			throw new FileNotFoundException("Missing properties file: " + fileName);
 		}
+		
+		return propToLoad;
 	}
 }
