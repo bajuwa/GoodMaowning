@@ -49,7 +49,7 @@ public class Maower {
 		Session session = Session.getInstance(emailProperties,
 		  new javax.mail.Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication("username", "password");
+				return new PasswordAuthentication(username, password);
 			}
 		  });
 		
@@ -65,8 +65,10 @@ public class Maower {
 			message.setText(messageBody);
 			
 			/* Send the email */
+			logger.debug("Connecting to gmail smtp...");
+			t.connect(host, username, password);
 			logger.debug("Sending email...");
-			Transport.send(message);
+			t.sendMessage(message, message.getAllRecipients());
 
 			logger.info("Email sent!");
 			
