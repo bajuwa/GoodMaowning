@@ -20,6 +20,7 @@ public class Maower {
 		logger.info("Good Maowning!");
 		
 		/* Subscribers */
+		/* TODO: Refactor to call a 'SubscriberManager' class */
 		logger.debug("Finding subscribers...");
 		String[] toAddresses = args;
 		if (toAddresses.length == 0) {
@@ -27,7 +28,14 @@ public class Maower {
 			return;
 		}
 		
+		/* Email Config: content */
+		/* TODO: Refactor to call a 'MessageFormatter' class */
+		logger.debug("Generating content...");
+		String subject = "Good Maowning!";
+		String messageBody = "http://i.imgur.com/bOd2iVK.jpg";
+		
 		/* Email Config: local properties */
+		/* TODO: Move all 'sending email' code to a 'EmailManager' class */
 		Properties emailProperties = new Properties();
 		try {
 			logger.debug("Loading email properties...");
@@ -42,19 +50,16 @@ public class Maower {
 		final String password = emailProperties.getProperty("maower.password");
 		final String host = emailProperties.getProperty("maower.host");
 		
-		/* Email Config: content */
-		logger.debug("Generating content...");
-		String subject = "Good Maowning!";
-		String messageBody = "http://i.imgur.com/bOd2iVK.jpg";
-		
 		/* Setup SMTP */
 		logger.debug("Setting up SMTP...");
-		Session session = Session.getInstance(emailProperties,
-		  new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(username, password);
+		Session session = Session.getInstance(
+			emailProperties,
+			new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(username, password);
+				}
 			}
-		  });
+		);
 		
 		/* Send the email */
 		try {
