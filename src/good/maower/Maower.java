@@ -54,7 +54,6 @@ public class Maower {
 		  });
 		
 		/* Send the email */
-		Transport t = session.getTransport("smtps");
 		try {
 			/* Create message */
 			logger.debug("Creating email...");
@@ -65,18 +64,14 @@ public class Maower {
 			message.setText(messageBody);
 			
 			/* Send the email */
-			logger.debug("Connecting to gmail smtp...");
-			t.connect(host, username, password);
 			logger.debug("Sending email...");
-			t.sendMessage(message, message.getAllRecipients());
+			Transport.send(message);
 
 			logger.info("Email sent!");
 			
 		} catch (MessagingException e) {
 			logger.error(e);
 			throw e;
-		} finally {
-			t.close();
 		}
 	}
 	
