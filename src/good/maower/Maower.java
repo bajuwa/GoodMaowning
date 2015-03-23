@@ -4,9 +4,11 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import javax.mail.MessagingException;
+import java.util.*;
 
 import good.maower.EmailManager;
 import good.maower.ImageDAO;
+import good.maower.SubscriberDAO;
 
 /**
  * Sends emails to subscribers
@@ -20,8 +22,8 @@ public class Maower {
 		/* Subscribers */
 		/* TODO: Refactor to call a 'SubscriberManager' class */
 		logger.debug("Finding subscribers...");
-		String[] toAddresses = args;
-		if (toAddresses.length == 0) {
+		List<String> toAddresses = (new SubscriberDAO()).getAll();
+		if (toAddresses.isEmpty()) {
 			logger.warn("No subscribers found, aborting maowing");
 			return;
 		}

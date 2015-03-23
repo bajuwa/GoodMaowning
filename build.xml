@@ -34,7 +34,7 @@
         </jar>
     </target>
 
-    <target name="run" depends="jar, input-runargs">
+    <target name="run" depends="jar">
         <java fork="true" classname="${main-class}">
 			<classpath>
 				<path refid="classpath"/>
@@ -43,10 +43,6 @@
 			<arg line="${args}"/>
 		</java>
     </target>
-	
-	<target name="input-runargs" unless="args" description="Ensures that subscriber email addresses are specified in command line arguments">
-		<input addProperty="args" message="List subscribers: "/>
-	</target>
 	
 	<target name="clean-build" depends="clean,jar"/>
 	

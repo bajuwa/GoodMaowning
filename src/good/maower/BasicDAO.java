@@ -11,7 +11,8 @@ public abstract class BasicDAO {
 	private final String DATABASE_PROP_FILE_NAME = "database.properties";
 	
 	protected enum GMDatabase {
-		IMAGES
+		IMAGES,
+		SUBSCRIBERS
 	}
 	
 	protected abstract GMDatabase getDatabaseEnum();
@@ -41,6 +42,8 @@ public abstract class BasicDAO {
 		switch (db) {
 			case IMAGES:
 				return databaseProperties.getProperty("connection.db.images");
+			case SUBSCRIBERS:
+				return databaseProperties.getProperty("connection.db.subscribers");
 			default:
 				throw new RuntimeException("No database found for enum: " + db);
 		}

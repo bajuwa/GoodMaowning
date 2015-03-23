@@ -12,7 +12,7 @@ public class EmailManager {
 	private static final Logger logger = Logger.getLogger(EmailManager.class);
 	private static final String EMAIL_PROP_FILE_NAME = "email.properties";
 
-	public static void sendEmail(String[] toAddresses, String subject, String body) throws IOException, MessagingException {
+	public static void sendEmail(List<String> toAddresses, String subject, String body) throws IOException, MessagingException {
 		/* Get our local email configurations */
 		logger.debug("Loading email properties...");
 		Properties emailProperties = loadProperties(EMAIL_PROP_FILE_NAME);
@@ -41,8 +41,8 @@ public class EmailManager {
 			message.setText(body);
 			
 			/* Add subscribers */
-			for (int i = 0; i < toAddresses.length; i++) {
-				message.addRecipient(Message.RecipientType.TO, new InternetAddress(toAddresses[i]));
+			for (String toAddress : toAddresses) {
+				message.addRecipient(Message.RecipientType.TO, new InternetAddress(toAddress));
 			}
 			
 			/* Send the email */
