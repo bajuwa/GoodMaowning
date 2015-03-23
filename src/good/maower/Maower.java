@@ -6,6 +6,7 @@ import java.io.IOException;
 import javax.mail.MessagingException;
 
 import good.maower.EmailManager;
+import good.maower.ImageDAO;
 
 /**
  * Sends emails to subscribers
@@ -29,7 +30,7 @@ public class Maower {
 		/* TODO: Refactor to call a 'MessageFormatter' class */
 		logger.debug("Generating content...");
 		String subject = "Good Maowning!";
-		String messageBody = "http://i.imgur.com/bOd2iVK.jpg";
+		String messageBody = ImageDAO.getRandomUrl();
 		
 		/* Email Config: local properties */
 		/* TODO: Move all 'sending email' code to a 'EmailManager' class */
