@@ -11,3 +11,4 @@ ant 1.9.4
 
 Additional properties files are also required (samples included, must be renamed to the following and filled out with your own information):
 src/email.properties
+src/database.properties
