@@ -30,7 +30,7 @@ public class Maower {
 		/* TODO: Refactor to call a 'MessageFormatter' class */
 		logger.debug("Generating content...");
 		String subject = "Good Maowning!";
-		String messageBody = ImageDAO.getRandomUrl();
+		String messageBody = (new ImageDAO()).getRandomUrl();
 		
 		/* Email Config: local properties */
 		/* TODO: Move all 'sending email' code to a 'EmailManager' class */
