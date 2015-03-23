@@ -12,23 +12,11 @@ public class ImageDAO {
 	
 	public static String getRandomUrl() throws IOException, SQLException {
 		logger.info("Getting random url");
-		Properties databaseProperties = loadProperties(DATABASE_PROP_FILE_NAME);
-		Connection dbConnection = null;
-		Statement stmt = null;
-	
-		/* Setup connection to our images database */
-		try {
-			logger.debug("Setting up database connection");
-			Class.forName(databaseProperties.getProperty("connection.class"));
-			dbConnection = DriverManager.getConnection(databaseProperties.getProperty("connection.string"));
-		} catch (Exception e) {
-			logger.error(e);
-			throw new IOException("Unable to connect to images database");
-		}
+		Connection dbConnection = connect();
 		
 		/* Create the query */
 		logger.debug("Executing query");
-		stmt = dbConnection.createStatement();
+		Statement stmt = dbConnection.createStatement();
 		ResultSet rs = stmt.executeQuery(
 			"SELECT url " +
 			"FROM images " +
@@ -43,6 +31,23 @@ public class ImageDAO {
 			logger.error("No URL record found");
 			throw new RuntimeException("No URL record found");
 		}
+	}
+	
+	private static Connection connect() throws IOException {
+		Properties databaseProperties = loadProperties(DATABASE_PROP_FILE_NAME);
+		Connection dbConnection = null;
+	
+		/* Setup connection to our images database */
+		try {
+			logger.debug("Setting up database connection");
+			Class.forName(databaseProperties.getProperty("connection.class"));
+			dbConnection = DriverManager.getConnection(databaseProperties.getProperty("connection.string"));
+		} catch (Exception e) {
+			logger.error(e);
+			throw new IOException("Unable to connect to images database");
+		}
+		
+		return dbConnection;
 	}
 	
 	/* TODO: Move to a reusable utils class */
