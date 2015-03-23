@@ -12,9 +12,9 @@ import good.maower.ImageDAO;
  * Sends emails to subscribers
  */
 public class Maower {
-	static Logger logger = Logger.getLogger(Maower.class);
+	static final Logger logger = Logger.getLogger(Maower.class);
 
-	public static void main(String[] args) throws IOException, MessagingException {
+	public static void main(String[] args) throws Exception {
 		logger.info("Good Maowning!");
 		
 		/* Subscribers */

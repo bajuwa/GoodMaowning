@@ -9,7 +9,7 @@ import javax.mail.internet.*;
 import javax.activation.*;
 
 public class EmailManager {
-	private static Logger logger = Logger.getLogger(EmailManager.class);
+	private static final Logger logger = Logger.getLogger(EmailManager.class);
 	private static final String EMAIL_PROP_FILE_NAME = "email.properties";
 
 	public static void sendEmail(String[] toAddresses, String subject, String body) throws IOException, MessagingException {
@@ -57,6 +57,7 @@ public class EmailManager {
 		}
 	}
 	
+	/* TODO: Move to a reusable utils class */
 	private static Properties loadProperties(String fileName) throws IOException {
 		Properties propToLoad = new Properties();
 		

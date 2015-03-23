@@ -1,4 +1,5 @@
 email.properties
+database.properties
 log/
 build/
-data/
+resources/
