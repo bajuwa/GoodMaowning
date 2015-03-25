@@ -47,6 +47,9 @@ public class EmailManager {
 			
 			/* Send the email */
 			logger.debug("Sending email...");
+			logger.debug("To: " + toAddresses.toString());
+			logger.debug("Subject: " + subject);
+			logger.debug("Message: " + body);
 			Transport.send(message);
 
 			logger.info("Email sent!");

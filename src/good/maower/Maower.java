@@ -28,14 +28,16 @@ public class Maower {
 			return;
 		}
 		
-		/* Email Config: content */
-		/* TODO: Refactor to call a 'MessageFormatter' class */
 		logger.debug("Generating content...");
-		String subject = "Good Maowning!";
-		String messageBody = (new ImageDAO()).getRandomUrl();
-		
-		/* Email Config: local properties */
-		/* TODO: Move all 'sending email' code to a 'EmailManager' class */
-		EmailManager.sendEmail(toAddresses, subject, messageBody);
+		for (String address : toAddresses) {
+			/* Email Config: content */
+			/* TODO: Refactor to call a 'MessageFormatter' class */
+			String subject = "Good Maowning!";
+			String messageBody = (new ImageDAO()).getRandomUrl();
+			
+			/* Email Config: local properties */
+			/* TODO: Move all 'sending email' code to a 'EmailManager' class */
+			EmailManager.sendEmail(Arrays.asList(address), subject, messageBody);
+		}
 	}
 }
