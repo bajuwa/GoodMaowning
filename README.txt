@@ -1,6 +1,6 @@
 Good Maowning!
 ==============
-A simple java server project that will send an email to subscribers each morning with a cute cat picture.  
+A simple java project that will send an email to subscribers each morning with a cute cat picture.  
 
 
 Requirements
@@ -12,3 +12,8 @@ ant 1.9.4
 Additional properties files are also required (samples included, must be renamed to the following and filled out with your own information):
 src/email.properties
 src/database.properties
+
+
+Upgrades
+========
+If you are upgrading from previous versions, make sure to upgrade each of your databases as well.  To do so, run each of the v#_#_DB_NAME_upgrade.sql files in the develop/ folder that have a version number AFTER your old version, up to and INCLUDING your new version.

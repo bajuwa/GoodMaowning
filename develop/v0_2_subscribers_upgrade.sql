@@ -1,0 +1,2 @@
+ALTER TABLE subscribers
+ADD COLUMN send_time TEXT NOT NULL DEFAULT '09:00';
