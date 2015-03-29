@@ -16,7 +16,8 @@ import good.maower.SubscriberDAO;
 public class Maower {
 	static final Logger logger = Logger.getLogger(Maower.class);
 
-	public static void main(String[] args) throws Exception {
+	/* TODO: Tighten up the types of thrown Exceptions */
+	public static void maow() throws Exception {
 		logger.info("Good Maowning!");
 		
 		/* Subscribers */

@@ -1,4 +1,4 @@
-<project name="Maower" basedir="." default="main">
+<project name="GoodMaowning" basedir="." default="main">
 	<property name="src.dir" value="src"/>
 	<property name="build.dir" value="build"/>
 	<property name="classes.dir" value="${build.dir}/classes"/>
@@ -6,7 +6,7 @@
 	<property name="lib.dir" value="lib"/>
 	<property name="log.dir" value="log"/>
 	
-	<property name="main-class" value="good.maower.Maower"/>
+	<property name="main-class" value="good.maowning.GoodMaowning"/>
 	
 	<path id="classpath">
 		<fileset dir="${lib.dir}" includes="**/*.jar"/>
