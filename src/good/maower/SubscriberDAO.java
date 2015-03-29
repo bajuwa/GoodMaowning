@@ -10,6 +10,10 @@ import good.maower.BasicDAO;
 
 public class SubscriberDAO extends BasicDAO {
 
+	public SubscriberDAO() throws IOException {
+		super();
+	}
+
 	protected GMDatabase getDatabaseEnum() {
 		return GMDatabase.SUBSCRIBERS;
 	}
@@ -18,19 +22,19 @@ public class SubscriberDAO extends BasicDAO {
 		List<String> subscribers = new LinkedList<String>();
 	
 		logger.info("Getting all subscribers");
-		Connection dbConnection = connect();
 		
 		/* Create the query */
 		logger.debug("Executing query");
-		Statement stmt = dbConnection.createStatement();
-		ResultSet rs = stmt.executeQuery(
-			"SELECT email " +
-			"FROM subscribers;"
-		);
-		
-		/* Parse the result for the url */
-		while (rs.next()) {
-			subscribers.add(rs.getString("email"));
+		try (Statement stmt = dbConnection.createStatement()) {
+			ResultSet rs = stmt.executeQuery(
+				"SELECT email " +
+				"FROM subscribers;"
+			);
+			
+			/* Parse the result for the url */
+			while (rs.next()) {
+				subscribers.add(rs.getString("email"));
+			}
 		}
 		
 		return subscribers;

@@ -19,7 +19,6 @@ public class Maower {
 	/* TODO: Tighten up the types of thrown Exceptions */
 	public static void maow() throws Exception {
 		logger.info("Good Maowning!");
-		ImageDAO imageDao = new ImageDAO();
 		
 		/* Subscribers */
 		/* TODO: Refactor to call a 'SubscriberManager' class */
@@ -31,15 +30,17 @@ public class Maower {
 		}
 		
 		logger.debug("Generating content...");
-		for (String address : toAddresses) {
-			/* Email Config: content */
-			/* TODO: Refactor to call a 'MessageFormatter' class */
-			String subject = "Good Maowning!";
-			String messageBody = imageDao.getRandomUrl();
-			
-			/* Email Config: local properties */
-			/* TODO: Move all 'sending email' code to a 'EmailManager' class */
-			EmailManager.sendEmail(Arrays.asList(address), subject, messageBody);
+		try (ImageDAO imageDao = new ImageDAO()) {
+			for (String address : toAddresses) {
+				/* Email Config: content */
+				/* TODO: Refactor to call a 'MessageFormatter' class */
+				String subject = "Good Maowning!";
+				String messageBody = imageDao.getRandomUrl();
+				
+				/* Email Config: local properties */
+				/* TODO: Move all 'sending email' code to a 'EmailManager' class */
+				EmailManager.sendEmail(Arrays.asList(address), subject, messageBody);
+			}
 		}
 	}
 }
