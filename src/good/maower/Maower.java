@@ -19,6 +19,7 @@ public class Maower {
 	/* TODO: Tighten up the types of thrown Exceptions */
 	public static void maow() throws Exception {
 		logger.info("Good Maowning!");
+		ImageDAO imageDao = new ImageDAO();
 		
 		/* Subscribers */
 		/* TODO: Refactor to call a 'SubscriberManager' class */
@@ -34,7 +35,7 @@ public class Maower {
 			/* Email Config: content */
 			/* TODO: Refactor to call a 'MessageFormatter' class */
 			String subject = "Good Maowning!";
-			String messageBody = (new ImageDAO()).getRandomUrl();
+			String messageBody = imageDao.getRandomUrl();
 			
 			/* Email Config: local properties */
 			/* TODO: Move all 'sending email' code to a 'EmailManager' class */
