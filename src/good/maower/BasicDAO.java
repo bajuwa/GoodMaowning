@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.*;
 import java.sql.*;
 
-public abstract class BasicDAO {
+public abstract class BasicDAO implements AutoCloseable {
 	protected final Logger logger = Logger.getLogger(getClass());
 	private final String DATABASE_PROP_FILE_NAME = "database.properties";
 	
@@ -15,11 +15,20 @@ public abstract class BasicDAO {
 		SUBSCRIBERS
 	}
 	
+	protected Connection dbConnection = null;
+	
+	protected BasicDAO() throws IOException {
+		this.connect();
+	}
+	
+	public void close() throws Exception {
+		if (dbConnection != null) dbConnection.close();
+	}
+	
 	protected abstract GMDatabase getDatabaseEnum();
 	
-	protected Connection connect() throws IOException {
+	private void connect() throws IOException {
 		Properties databaseProperties = loadProperties(DATABASE_PROP_FILE_NAME);
-		Connection dbConnection = null;
 		
 		/* Setup connection to our images database */
 		try {
@@ -32,8 +41,6 @@ public abstract class BasicDAO {
 			logger.error(e);
 			throw new IOException("Unable to connect to images database");
 		}
-		
-		return dbConnection;
 	}
 	
 	private String getConnectionString(Properties databaseProperties) {
