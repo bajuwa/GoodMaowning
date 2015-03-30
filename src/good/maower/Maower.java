@@ -14,7 +14,7 @@ import good.maower.SubscriberDAO;
  * Sends emails to subscribers
  */
 public class Maower {
-	static final Logger logger = Logger.getLogger(Maower.class);
+	private static final Logger logger = Logger.getLogger(Maower.class);
 
 	/* TODO: Tighten up the types of thrown Exceptions */
 	public static void maow() throws Exception {
@@ -23,12 +23,13 @@ public class Maower {
 		/* Subscribers */
 		/* TODO: Refactor to call a 'SubscriberManager' class */
 		logger.debug("Finding subscribers...");
-		List<String> toAddresses = (new SubscriberDAO()).getAll();
+		List<String> toAddresses = (new SubscriberDAO()).getDueSubscriptions();
 		if (toAddresses.isEmpty()) {
 			logger.warn("No subscribers found, aborting maowing");
 			return;
 		}
 		
+		/* TODO: Apply best effort when sending emails instead of fail-all */
 		logger.debug("Generating content...");
 		try (ImageDAO imageDao = new ImageDAO()) {
 			for (String address : toAddresses) {
@@ -40,6 +41,9 @@ public class Maower {
 				/* Email Config: local properties */
 				/* TODO: Move all 'sending email' code to a 'EmailManager' class */
 				EmailManager.sendEmail(Arrays.asList(address), subject, messageBody);
+				
+				/* Mark the subscriber as having successfully been sent the email */
+				/* TODO */
 			}
 		}
 	}

@@ -23,7 +23,7 @@ public class ImageDAO extends BasicDAO {
 		
 		/* Create the query */
 		logger.debug("Executing query");
-		try (Statement stmt = dbConnection.createStatement())
+		try (Statement stmt = dbConnection.createStatement()) {
 			ResultSet rs = stmt.executeQuery(
 				"SELECT url " +
 				"FROM images " +
