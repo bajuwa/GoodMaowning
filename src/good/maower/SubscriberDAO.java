@@ -44,7 +44,7 @@ public class SubscriberDAO extends BasicDAO {
 	public List<String> getDueSubscriptions() throws IOException, SQLException {
 		List<String> subscribers = new LinkedList<String>();
 	
-		logger.info("Getting all subscribers");
+		logger.info("Getting all due subscribers");
 		
 		logger.debug("Calculating subscription time...");
 		LocalDateTime currentTime = LocalDateTime.now();
@@ -68,5 +68,24 @@ public class SubscriberDAO extends BasicDAO {
 		}
 		
 		return subscribers;
+	}
+	
+	public void updateLastSentDate(String subscriberEmail) throws IOException, SQLException {
+		List<String> subscribers = new LinkedList<String>();
+	
+		int lastDateSent = LocalDate.now().getDayOfMonth();
+		logger.info(String.format("Setting subscriber <%s> last sent date to <%d>", subscriberEmail, lastDateSent));
+		
+		/* Create the query */
+		/* TODO: Refactor query to better handle times that straddle the midnight turnovers */
+		logger.debug("Executing query");
+		try (Statement stmt = dbConnection.createStatement()) {
+			stmt.executeUpdate(String.format(
+				"UPDATE subscribers " + 
+				"SET last_date_sent = %d " + 
+				"WHERE email = '%s'; ",
+				lastDateSent, subscriberEmail
+			));
+		}
 	}
 }

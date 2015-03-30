@@ -18,32 +18,32 @@ public class Maower {
 
 	/* TODO: Tighten up the types of thrown Exceptions */
 	public static void maow() throws Exception {
-		logger.info("Good Maowning!");
-		
 		/* Subscribers */
 		/* TODO: Refactor to call a 'SubscriberManager' class */
 		logger.debug("Finding subscribers...");
-		List<String> toAddresses = (new SubscriberDAO()).getDueSubscriptions();
-		if (toAddresses.isEmpty()) {
-			logger.warn("No subscribers found, aborting maowing");
-			return;
-		}
-		
-		/* TODO: Apply best effort when sending emails instead of fail-all */
-		logger.debug("Generating content...");
-		try (ImageDAO imageDao = new ImageDAO()) {
-			for (String address : toAddresses) {
-				/* Email Config: content */
-				/* TODO: Refactor to call a 'MessageFormatter' class */
-				String subject = "Good Maowning!";
-				String messageBody = imageDao.getRandomUrl();
-				
-				/* Email Config: local properties */
-				/* TODO: Move all 'sending email' code to a 'EmailManager' class */
-				EmailManager.sendEmail(Arrays.asList(address), subject, messageBody);
-				
-				/* Mark the subscriber as having successfully been sent the email */
-				/* TODO */
+		try (SubscriberDAO subscriberDao = new SubscriberDAO()) {
+			List<String> toAddresses = subscriberDao.getDueSubscriptions();
+			if (toAddresses.isEmpty()) {
+				logger.warn("No subscribers found, aborting maowing");
+				return;
+			}
+			
+			/* TODO: Apply best effort when sending emails instead of fail-all */
+			logger.debug("Generating content...");
+			try (ImageDAO imageDao = new ImageDAO()) {
+				for (String address : toAddresses) {
+					/* Email Config: content */
+					/* TODO: Refactor to call a 'MessageFormatter' class */
+					String subject = "Good Maowning!";
+					String messageBody = imageDao.getRandomUrl();
+					
+					/* Email Config: local properties */
+					/* TODO: Move all 'sending email' code to a 'EmailManager' class */
+					EmailManager.sendEmail(Arrays.asList(address), subject, messageBody);
+					
+					/* Mark the subscriber as having successfully been sent the email */
+					subscriberDao.updateLastSentDate(address);
+				}
 			}
 		}
 	}
