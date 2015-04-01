@@ -82,8 +82,6 @@ public class RedditAPIWrapper {
 			logger.error("Unable to parse response json, skipping submission grab");
 			return new ArrayList<String>();
 		}
-		/* TODO: Filter out 'banned' words that often signal poor pictures (RIP, etc) */
-		/* TODO: add each url to the images db (insert or ignore) */
 		
 	}
 	

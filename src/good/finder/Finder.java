@@ -27,6 +27,7 @@ public class Finder {
 		
 		ImageDAO imageDao = new ImageDAO();
 		for (String url : urls) {
+			/* TODO: Filter out 'banned' words that often signal poor pictures (RIP, etc) */
 			imageDao.addUrl(url);
 		}
 	}
