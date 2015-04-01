@@ -3,6 +3,7 @@ package good.finder;
 import org.apache.log4j.Logger;
 
 import java.util.*;
+import org.json.*;
  
 /* HTTP Imports */
 import java.io.BufferedReader;
@@ -13,6 +14,8 @@ import java.net.URL;
 
 public class RedditAPIWrapper {
 	private final static Logger logger = Logger.getLogger(RedditAPIWrapper.class);
+	
+	private final static String IMAGE_HOST_DOMAIN = "imgur.com";
 	
 	public enum Subreddit {
 		CATS("cats"),
@@ -46,16 +49,35 @@ public class RedditAPIWrapper {
 	}
 
 	public static List<String> getSubmissions(Subreddit sub, SubCategory category, Timespan time, int numOfEntries) {
+		/* Send our reddit api request */
+		String response;
 		try {
-			String response = sendHttpGet(formUrl(sub, category, time, numOfEntries));
+			response = sendHttpGet(formUrl(sub, category, time, numOfEntries));
 		} catch (IOException e) {
 			logger.error(e);
 			return new ArrayList<String>();
 		}
 		
-		/* TODO: Parse into more usable form? */
+		/* TODO: Parse the json into a local object with only the needed information */
+		try {
+			List<String> urls = new ArrayList<String>();
+			JSONObject json = new JSONObject(response);
+			JSONArray listing = (JSONArray) ((JSONObject) json.get("data")).get("children");
+			for (int i = 0; i < listing.length(); i++) {
+				JSONObject submission = (JSONObject) ((JSONObject) listing.getJSONObject(i)).get("data");
+				/* Only return the url if it is from an image host (no self.sub submissions) */
+				if (submission.getString("domain").equals(IMAGE_HOST_DOMAIN)) {
+					urls.add(submission.getString("url"));
+				}
+			}
+			return urls;
+		} catch (Exception e) {
+			logger.error("Unable to parse response json, skipping submission grab");
+			return new ArrayList<String>();
+		}
+		/* TODO: Filter out 'banned' words that often signal poor pictures (RIP, etc) */
+		/* TODO: add each url to the images db (insert or ignore) */
 		
-		return new ArrayList<String>();
 	}
 	
 	private static String formUrl(Subreddit sub, SubCategory category, Timespan time, int numOfEntries) {
