@@ -15,6 +15,8 @@ public class GoodMaowning {
 	public static void main(String[] args) throws InterruptedException {
 		/* This program will run continuously until killed */
 		while (true) {
+			long startTime = System.currentTimeMillis();
+		
 			/* Call the Finder to gather images */
 			int numOfNewUrls = Finder.findUrls().size();
 			logger.info(String.format("Found <%d> new cat urls!", numOfNewUrls));
@@ -31,10 +33,11 @@ public class GoodMaowning {
 				logger.error(e);
 			}
 			
-			/* Sleep */
-			/* TODO: Reconfigure to be a 'sleep remainder of the the default' so that it runs every X ms instead */
-			logger.info(String.format("Sleeping for [%d] milliseconds...", DEFAULT_SLEEP_MILLISECONDS));
-			Thread.sleep(DEFAULT_SLEEP_MILLISECONDS);
+			/* Sleep for the remainder of our cycle time (if any time remains) */
+			long totalTimeSpent = System.currentTimeMillis() - startTime;
+			long timeToSleep = Math.max(0, DEFAULT_SLEEP_MILLISECONDS - totalTimeSpent);
+			logger.info(String.format("Sleeping for [%d] milliseconds...", timeToSleep));
+			Thread.sleep(timeToSleep);
 		}
 	}
 }
