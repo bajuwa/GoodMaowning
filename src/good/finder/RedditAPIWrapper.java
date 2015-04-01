@@ -70,8 +70,8 @@ public class RedditAPIWrapper {
 					/* Make sure we use i.imgur to get the image, not the imgur page */
 					String url = submission.getString("url").replace("//imgur", "//i.imgur");
 					/* Make sure there is an image type extension as well (default to jpg) */
-					if (!url.matches(".*imgur\.com/.*\..*")) {
-						url.concat(".jpg");
+					if (!url.matches(".*imgur\\.com\\/.*\\..+")) {
+						url = url.concat(".jpg");
 					}
 					/* Add our 'massaged' url to the return list */
 					urls.add(url);
