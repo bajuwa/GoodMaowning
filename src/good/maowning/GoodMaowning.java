@@ -14,6 +14,12 @@ public class GoodMaowning {
 	public static void main(String[] args) throws InterruptedException {
 		/* This program will run continuously until killed */
 		while (true) {
+			/* Call the Finder to gather images */
+			/* TODO */
+			
+			/* Call Subber to manage subscription requests */
+			/* TODO */
+		
 			/* Call the Maower to send emails */
 			logger.info("Maowing...");
 			try {
@@ -24,6 +30,7 @@ public class GoodMaowning {
 			}
 			
 			/* Sleep */
+			/* TODO: Reconfigure to be a 'sleep remainder of the the default' so that it runs every X ms instead */
 			logger.info(String.format("Sleeping for [%d] milliseconds...", DEFAULT_SLEEP_MILLISECONDS));
 			Thread.sleep(DEFAULT_SLEEP_MILLISECONDS);
 		}

@@ -8,7 +8,7 @@ CREATE TABLE subscribers (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	email TEXT UNIQUE NOT NULL,
 	send_time TEXT NOT NULL DEFAULT '09:00',
-	last_date_sent TEXT)
+	last_date_sent INTEGER NOT NULL DEFAULT 0)
 );
 
 COMMIT;
