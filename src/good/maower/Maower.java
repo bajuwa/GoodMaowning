@@ -7,8 +7,8 @@ import javax.mail.MessagingException;
 import java.util.*;
 
 import good.maower.EmailManager;
-import good.maower.ImageDAO;
-import good.maower.SubscriberDAO;
+import good.data.ImageDAO;
+import good.data.SubscriberDAO;
 
 /**
  * Sends emails to subscribers

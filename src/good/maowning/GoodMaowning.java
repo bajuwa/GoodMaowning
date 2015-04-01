@@ -18,8 +18,13 @@ public class GoodMaowning {
 			long startTime = System.currentTimeMillis();
 		
 			/* Call the Finder to gather images */
-			int numOfNewUrls = Finder.findUrls().size();
-			logger.info(String.format("Found <%d> new cat urls!", numOfNewUrls));
+			logger.info("Finding...");
+			try {
+				Finder.findUrls();
+			} catch (Exception e) {
+				logger.error("Encountered error during Finding: ");
+				logger.error(e);
+			}
 			
 			/* Call Subber to manage subscription requests */
 			/* TODO */

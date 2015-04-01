@@ -1,6 +1,10 @@
 package good.finder;
 
+import good.data.ImageDAO;
+
 import java.util.*;
+import java.io.IOException;
+import java.sql.SQLException;
 
 /**
  * Scans internet for urls to add to system
@@ -10,9 +14,9 @@ public class Finder {
 	/**
 	 * Scans through reddit image submissions to find potential cat urls
 	 */
-	public static List<String> findUrls() {
+	public static void findUrls() throws IOException, SQLException {
 		/* TODO: Get some cats from /r/cats */
-		return RedditAPIWrapper.getSubmissions(
+		List<String> urls = RedditAPIWrapper.getSubmissions(
 			RedditAPIWrapper.Subreddit.CATS, 
 			RedditAPIWrapper.SubCategory.HOT, 
 			RedditAPIWrapper.Timespan.DAY, 
@@ -20,5 +24,10 @@ public class Finder {
 		);
 		
 		/* TODO: Get some cats for /r/aww */
+		
+		ImageDAO imageDao = new ImageDAO();
+		for (String url : urls) {
+			imageDao.addUrl(url);
+		}
 	}
 }

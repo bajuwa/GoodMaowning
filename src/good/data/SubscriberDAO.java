@@ -1,4 +1,4 @@
-package good.maower;
+package good.data;
 
 import org.apache.log4j.Logger;
 
@@ -7,7 +7,7 @@ import java.util.*;
 import java.sql.*;
 import java.time.*;
 
-import good.maower.BasicDAO;
+import good.data.BasicDAO;
 
 public class SubscriberDAO extends BasicDAO {
 

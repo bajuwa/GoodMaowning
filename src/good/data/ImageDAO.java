@@ -1,4 +1,4 @@
-package good.maower;
+package good.data;
 
 import org.apache.log4j.Logger;
 
@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.*;
 import java.sql.*;
 
-import good.maower.BasicDAO;
+import good.data.BasicDAO;
 
 public class ImageDAO extends BasicDAO {
 
@@ -18,11 +18,23 @@ public class ImageDAO extends BasicDAO {
 		return GMDatabase.IMAGES;
 	}
 	
+	public void addUrl(String url) throws IOException, SQLException {
+		logger.info("Adding url: " + url);
+		/* TODO: do some sanitization of the url */
+		
+		try (Statement stmt = dbConnection.createStatement()) {
+			stmt.executeUpdate(String.format(
+				"INSERT OR IGNORE INTO images(url) " + 
+				"values('%s'); ",
+				url
+			));
+		}
+	}
+	
 	public String getRandomUrl() throws IOException, SQLException {
 		logger.info("Getting random url");
 		
 		/* Create the query */
-		logger.debug("Executing query");
 		try (Statement stmt = dbConnection.createStatement()) {
 			ResultSet rs = stmt.executeQuery(
 				"SELECT url " +

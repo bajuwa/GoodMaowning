@@ -1,4 +1,4 @@
-package good.maower;
+package good.data;
 
 import org.apache.log4j.Logger;
 
@@ -60,7 +60,7 @@ public abstract class BasicDAO implements AutoCloseable {
 	private Properties loadProperties(String fileName) throws IOException {
 		Properties propToLoad = new Properties();
 		
-		InputStream inputStream = Maower.class.getClassLoader().getResourceAsStream(fileName);
+		InputStream inputStream = BasicDAO.class.getClassLoader().getResourceAsStream(fileName);
 		if (inputStream != null) {
 			propToLoad.load(inputStream);
 		} else {
