@@ -65,9 +65,16 @@ public class RedditAPIWrapper {
 			JSONArray listing = (JSONArray) ((JSONObject) json.get("data")).get("children");
 			for (int i = 0; i < listing.length(); i++) {
 				JSONObject submission = (JSONObject) ((JSONObject) listing.getJSONObject(i)).get("data");
-				/* Only return the url if it is from an image host (no self.sub submissions) */
+				/* Only return the url if it is from an image host (no self.sub, youtube, etc submissions) */
 				if (submission.getString("domain").equals(IMAGE_HOST_DOMAIN)) {
-					urls.add(submission.getString("url"));
+					/* Make sure we use i.imgur to get the image, not the imgur page */
+					String url = submission.getString("url").replace("//imgur", "//i.imgur");
+					/* Make sure there is an image type extension as well (default to jpg) */
+					if (!url.matches(".*imgur\.com/.*\..*")) {
+						url.concat(".jpg");
+					}
+					/* Add our 'massaged' url to the return list */
+					urls.add(url);
 				}
 			}
 			return urls;
