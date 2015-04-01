@@ -19,7 +19,7 @@ public class Finder {
 		List<String> urls = RedditAPIWrapper.getSubmissions(
 			RedditAPIWrapper.Subreddit.CATS, 
 			RedditAPIWrapper.SubCategory.HOT, 
-			RedditAPIWrapper.Timespan.DAY, 
+			RedditAPIWrapper.Timespan.HOUR, 
 			5
 		);
 		
