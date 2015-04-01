@@ -3,6 +3,7 @@ package good.maowning;
 import org.apache.log4j.Logger;
 
 import good.maower.Maower;
+import good.finder.Finder;
 
 import java.util.*;
 
@@ -15,7 +16,8 @@ public class GoodMaowning {
 		/* This program will run continuously until killed */
 		while (true) {
 			/* Call the Finder to gather images */
-			/* TODO */
+			int numOfNewUrls = Finder.findUrls().size();
+			logger.info(String.format("Found <%d> new cat urls!", numOfNewUrls));
 			
 			/* Call Subber to manage subscription requests */
 			/* TODO */

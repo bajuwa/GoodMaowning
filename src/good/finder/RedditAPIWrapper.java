@@ -8,18 +8,12 @@ public class RedditAPIWrapper {
 	private final static Logger logger = Logger.getLogger(RedditAPIWrapper.class);
 	
 	public enum Subreddit {
-		CATS("/r/cats"),
-		AWW("/r/aww");
+		CATS("cats"),
+		AWW("aww");
 		
 		private final String name;
-		
-		private Subreddit(String s) {
-			name = s;
-		}
-		
-		public String toString() {
-			return name;
-		}
+		private Subreddit(String s) {name = s;}
+		public String toString() {return name;}
 	}
 	
 	public enum SubCategory {
@@ -27,14 +21,8 @@ public class RedditAPIWrapper {
 		HOT("hot");
 		
 		private final String name;
-		
-		private SubCategory(String s) {
-			name = s;
-		}
-		
-		public String toString() {
-			return name;
-		}
+		private SubCategory(String s) {name = s;}
+		public String toString() {return name;}
 	}
 	
 	public enum Timespan {
@@ -46,19 +34,17 @@ public class RedditAPIWrapper {
 		ALL("all");
 		
 		private final String name;
-		
-		private Timespan(String s) {
-			name = s;
-		}
-		
-		public String toString() {
-			return name;
-		}
+		private Timespan(String s) {name = s;}
+		public String toString() {return name;}
 	}
 
 	public static List<String> getSubmissions(Subreddit sub, SubCategory category, Timespan time, int numOfEntries) {
 		/* TODO */
-		logger.debug(String.format("Subreddit <%s>, SubCategory <%s>, Timespan <%s>, Entries <%d>", sub, category, time, numOfEntries));
-		return null;
+		logger.debug(formUrl(sub, category, time, numOfEntries));
+		return new ArrayList<String>();
+	}
+	
+	private static String formUrl(Subreddit sub, SubCategory category, Timespan time, int numOfEntries) {
+		return String.format("https://www.reddit.com/r/%s/%s.json?t=%s&limit=%d", sub, category, time, numOfEntries);
 	}
 }
