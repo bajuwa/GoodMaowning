@@ -11,7 +11,7 @@ import java.util.*;
 public class GoodMaowning {
 	private static final Logger logger = Logger.getLogger(GoodMaowning.class);
 	
-	private static final int DEFAULT_MAOWER_SLEEP_MILLISECONDS = 5 * 60 * 1000;
+	private static final int DEFAULT_MAOWER_SLEEP_MILLISECONDS = 1 * 60 * 1000;
 	private static final int DEFAULT_FINDER_SLEEP_MILLISECONDS = 60 * 60 * 1000;
 	
 	public static void main(String[] args) throws InterruptedException {
