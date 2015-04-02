@@ -40,7 +40,7 @@
 				<path refid="classpath"/>
 				<path location="${jar.dir}/${ant.project.name}.jar"/>
 			</classpath>
-			<arg line="${args}"/>
+			<arg value="${component}"/>
 		</java>
     </target>
 	

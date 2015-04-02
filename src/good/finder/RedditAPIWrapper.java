@@ -73,8 +73,10 @@ public class RedditAPIWrapper {
 					if (!url.matches(".*imgur\\.com\\/.*\\..+")) {
 						url = url.concat(".jpg");
 					}
-					/* Add our 'massaged' url to the return list */
-					urls.add(url);
+					/* Add our 'massaged' url to the return list (so long as its not an album) */
+					if (!url.matches(".*\\/a\\/.*")) {
+						urls.add(url);
+					}
 				}
 			}
 			return urls;
