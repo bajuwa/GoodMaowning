@@ -107,7 +107,7 @@ public class RedditAPIWrapper {
 		}
 		
 		String finalResponse = response.toString();
-		logger.debug("Returning response: " + finalResponse);
+		//logger.debug("Returning response: " + finalResponse);
 		return finalResponse;
 	}
 }
