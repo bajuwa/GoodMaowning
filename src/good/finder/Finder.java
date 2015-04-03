@@ -48,6 +48,12 @@ public class Finder {
 		try {
 			user.connect();
 			logger.info("Successfully connected to reddit bot");
+			
+			/* TODO: Get newest posts */
+			/* TODO: If anyone says "It's a kitty!" respond to them */
+			
+			/* TODO: For any of the bots posts with >5 karma, add the image to db */
+			
 		} catch (Exception e) {
 			logger.error(e);
 		}
