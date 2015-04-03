@@ -12,6 +12,7 @@ public class GoodMaowning {
 	private static final Logger logger = Logger.getLogger(GoodMaowning.class);
 	
 	private static final int DEFAULT_MAOWER_SLEEP_MILLISECONDS = 1 * 60 * 1000;
+	private static final int DEFAULT_BOT_SLEEP_MILLISECONDS = 5 * 60 * 1000;
 	private static final int DEFAULT_FINDER_SLEEP_MILLISECONDS = 60 * 60 * 1000;
 	
 	public static void main(String[] args) throws InterruptedException {
@@ -21,6 +22,9 @@ public class GoodMaowning {
 				break;
 			case "finder":
 				runFinder();
+				break;
+			case "bot":
+				runBot();
 				break;
 			default:
 				logger.error("No component name specified, aborting Good Maowning");
@@ -58,6 +62,7 @@ public class GoodMaowning {
 		while (true) {
 			long startTime = System.currentTimeMillis();
 		
+		
 			/* Call the Finder to gather images */
 			/* TODO: Limit how often requests are being made */
 			logger.info("Finding...");
@@ -82,6 +87,29 @@ public class GoodMaowning {
 			/* Sleep for the remainder of our cycle time (if any time remains) */
 			long totalTimeSpent = System.currentTimeMillis() - startTime;
 			long timeToSleep = Math.max(0, DEFAULT_FINDER_SLEEP_MILLISECONDS - totalTimeSpent);
+			logger.info(String.format("Sleeping for [%d] milliseconds...", timeToSleep));
+			Thread.sleep(timeToSleep);
+		}
+	}
+	
+	private static void runBot() throws InterruptedException {
+		logger.info("Starting Bot...");
+		
+		/* This program will run continuously until killed */
+		while (true) {
+			long startTime = System.currentTimeMillis();
+		
+			logger.info("Running Bot...");
+			try {
+				Finder.wakeBot();
+			} catch (Exception e) {
+				logger.error("Encountered error during bot run: ");
+				logger.error(e);
+			}
+			
+			/* Sleep for the remainder of our cycle time (if any time remains) */
+			long totalTimeSpent = System.currentTimeMillis() - startTime;
+			long timeToSleep = Math.max(0, DEFAULT_BOT_SLEEP_MILLISECONDS - totalTimeSpent);
 			logger.info(String.format("Sleeping for [%d] milliseconds...", timeToSleep));
 			Thread.sleep(timeToSleep);
 		}

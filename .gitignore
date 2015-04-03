@@ -1,5 +1,6 @@
 email.properties
 database.properties
+reddit.properties
 log/
 build/
 resources/
