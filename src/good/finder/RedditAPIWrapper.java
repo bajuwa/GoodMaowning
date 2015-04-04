@@ -1,9 +1,11 @@
 package good.finder;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import org.json.*;
+import java.lang.IllegalArgumentException;
  
 /* HTTP Imports */
 import java.io.BufferedReader;
@@ -70,18 +72,10 @@ public class RedditAPIWrapper {
 			JSONArray listing = (JSONArray) ((JSONObject) json.get("data")).get("children");
 			for (int i = 0; i < listing.length(); i++) {
 				JSONObject submission = (JSONObject) ((JSONObject) listing.getJSONObject(i)).get("data");
-				/* Only return the url if it is from an image host (no self.sub, youtube, etc submissions) */
-				if (submission.getString("domain").equals(IMAGE_HOST_DOMAIN)) {
-					/* Make sure we use i.imgur to get the image, not the imgur page */
-					String url = submission.getString("url").replace("//imgur", "//i.imgur");
-					/* Make sure there is an image type extension as well (default to jpg) */
-					if (!url.matches(".*imgur\\.com\\/.*\\..+")) {
-						url = url.concat(".jpg");
-					}
-					/* Add our 'massaged' url to the return list (so long as its not an album) */
-					if (!url.matches(".*\\/a\\/.*")) {
-						urls.add(url);
-					}
+				try {
+					urls.add(formatImgurUrl(submission.getString("url")));
+				} catch (IllegalArgumentException e) {
+					logger.warn(e);
 				}
 			}
 			return urls;
@@ -89,7 +83,14 @@ public class RedditAPIWrapper {
 			logger.error("Unable to parse response json, skipping submission grab");
 			return new ArrayList<String>();
 		}
-		
+	}
+	
+	public static List<Submission> getSubmissionsByIds(RestClient client, User user, List<String> linkIds) {
+		return (new Submissions(client, user)).parse(
+			String.format(
+				"/by_id/%s.json", StringUtils.join(linkIds, ",")
+			)
+		);
 	}
 	
 	public static List<Comment> getNewestCommentsBefore(RestClient client, User user, Subreddit sub, String beforeId, int limit) {
@@ -109,6 +110,28 @@ public class RedditAPIWrapper {
 			)
 		);
 	}
+	
+	public static String formatImgurUrl(String originalUrl) throws IllegalArgumentException {
+		String newUrl = originalUrl;
+		
+		/* Make sure we are dealing with an imgur domain url, and its not an album */
+		if (!newUrl.matches(".*imgur\\.com.*") || newUrl.matches(".*\\/a\\/.*")) {
+			throw new IllegalArgumentException("Unable to format url <" + originalUrl + "> in to a valid imgur format");
+		}
+		
+		/* Make sure we use i.imgur to get the image, not the imgur page */
+		if (!newUrl.matches(".*i\\.imgur\\.com.*")) {
+			newUrl = newUrl.replace("//imgur", "//i.imgur");
+		}
+		
+		/* Make sure there is an image type extension as well (default to jpg) */
+		if (!newUrl.matches(".*imgur\\.com\\/.*\\..+")) {
+			newUrl = newUrl.concat(".jpg");
+		}
+	
+		return newUrl;
+	}
+	
 	
 	private static String formUrl(Subreddit sub, SubCategory category, Timespan time, int numOfEntries) {
 		return String.format("http://www.reddit.com/r/%s/%s.json?t=%s&limit=%d", sub, category, time, numOfEntries);

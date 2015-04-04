@@ -8,8 +8,11 @@ import good.finder.RedditAPIWrapper;
 import java.util.*;
 import java.io.*;
 import java.sql.SQLException;
+import java.lang.IllegalArgumentException;
+
 import com.github.jreddit.entity.*;
 import com.github.jreddit.action.*;
+import com.github.jreddit.retrieval.*;
 import com.github.jreddit.utils.restclient.*;
 
 /**
@@ -27,13 +30,8 @@ public class Finder {
 	 * Scans through reddit image submissions to find potential cat urls
 	 */
 	public static void findUrls(RedditAPIWrapper.Subreddit sub, RedditAPIWrapper.SubCategory category, RedditAPIWrapper.Timespan time, int numOfEntries) throws IOException, SQLException {
-		List<String> urls = RedditAPIWrapper.getSubmissions(sub, category, time, numOfEntries);
-
-		ImageDAO imageDao = new ImageDAO();
-		for (String url : urls) {
-			/* TODO: Filter out 'banned' words that often signal poor pictures (RIP, etc) */
-			imageDao.addUrl(url);
-		}
+		/* TODO: Filter out 'banned' words that often signal poor pictures (RIP, etc) */
+		(new ImageDAO()).addUrls(RedditAPIWrapper.getSubmissions(sub, category, time, numOfEntries));
 	}
 	
 	public void wakeBot() throws IOException, SQLException {
@@ -65,18 +63,34 @@ public class Finder {
 				logger.debug("Got comments: " + comments);
 			
 				logger.info("Looking for key phrases...");
+				List<String> linkIds = new ArrayList<String>();
 				for (Comment comment : comments) {
-					/* TODO: If anyone says "It's a kitty!" respond to them */
+					/* TODO: If anyone says "It's a kitty!" respond to them and mark the url for storage */
 					if (comment.getBody().equals(BOT_KEYPHRASE)) {
 						logger.info(String.format("Comment <%s> with text body <%s> matched keyphrase [%s]", comment.getFullName(), comment.getBody(), BOT_KEYPHRASE));
 						
+						/* TODO: Move the comment message body formatting to a separate class */
 						SubmitActions reply = new SubmitActions(restClient, user);
 						reply.comment(comment.getFullName(), "Yes, it is!");
+						
+						/* TODO: JReddit doesn't seem to support getting the link url yet */
+						linkIds.add(comment.getLinkId());
 					}
 				}
 						
-				/* TODO: For any of the bots posts with positive karma, add the image to db */
-				logger.info("Storing images...");
+				/* Add any urls that were commented on to the image db */
+				if (linkIds.size() > 0) {
+					logger.info("Storing images...");
+					ImageDAO imageDao = new ImageDAO();
+					List<Submission> submissions = RedditAPIWrapper.getSubmissionsByIds(restClient, user, linkIds);
+					for (Submission submission : submissions) {
+						try {
+							imageDao.addUrl(RedditAPIWrapper.formatImgurUrl(submission.getURL()));
+						} catch (IllegalArgumentException e) {
+							logger.warn(e);
+						}
+					}
+				}
 				
 				/* The last comment id should be stored for next call */
 				if (comments.size() > 0) {

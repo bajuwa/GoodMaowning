@@ -18,6 +18,12 @@ public class ImageDAO extends BasicDAO {
 		return GMDatabase.IMAGES;
 	}
 	
+	public void addUrls(List<String> urls) throws IOException, SQLException {
+		for (String url : urls) {
+			this.addUrl(url);
+		}
+	}
+	
 	public void addUrl(String url) throws IOException, SQLException {
 		logger.info("Adding url: " + url);
 		/* TODO: do some sanitization of the url */
