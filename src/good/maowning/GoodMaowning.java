@@ -94,6 +94,7 @@ public class GoodMaowning {
 	
 	private static void runBot() throws InterruptedException {
 		logger.info("Starting Bot...");
+		Finder finder = new Finder();
 		
 		/* This program will run continuously until killed */
 		while (true) {
@@ -101,7 +102,7 @@ public class GoodMaowning {
 		
 			logger.info("Running Bot...");
 			try {
-				Finder.wakeBot();
+				finder.wakeBot();
 			} catch (Exception e) {
 				logger.error("Encountered error during bot run: ");
 				logger.error(e);

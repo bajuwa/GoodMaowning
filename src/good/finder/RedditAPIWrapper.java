@@ -12,6 +12,10 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import com.github.jreddit.entity.*;
+import com.github.jreddit.utils.restclient.*;
+import com.github.jreddit.retrieval.*;
+
 public class RedditAPIWrapper {
 	private final static Logger logger = Logger.getLogger(RedditAPIWrapper.class);
 	
@@ -48,6 +52,7 @@ public class RedditAPIWrapper {
 		public String toString() {return name;}
 	}
 
+	/* Refactor to use the new jreddit package */
 	public static List<String> getSubmissions(Subreddit sub, SubCategory category, Timespan time, int numOfEntries) {
 		/* Send our reddit api request */
 		String response;
@@ -85,6 +90,24 @@ public class RedditAPIWrapper {
 			return new ArrayList<String>();
 		}
 		
+	}
+	
+	public static List<Comment> getNewestCommentsAfter(RestClient client, User user, Subreddit sub, String afterId) {
+		return (new Comments(client, user)).parseBreadth(
+			String.format(
+				"/r/%s/comments.json?after=%s&sort=new",
+				sub, afterId
+			)
+		);
+	}
+	
+	public static List<Comment> getNewestComments(RestClient client, User user, Subreddit sub, int limit) {
+		return (new Comments(client, user)).parseBreadth(
+			String.format(
+				"/r/%s/comments.json?limit=%d&sort=new",
+				sub, limit
+			)
+		);
 	}
 	
 	private static String formUrl(Subreddit sub, SubCategory category, Timespan time, int numOfEntries) {

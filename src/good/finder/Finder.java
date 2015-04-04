@@ -18,6 +18,8 @@ public class Finder {
 	private static final Logger logger = Logger.getLogger(Finder.class);
 	
 	private static final String REDDIT_PROP_FILE_NAME = "reddit.properties";
+	
+	private String lastSeenCommentId;
 
 	/**
 	 * Scans through reddit image submissions to find potential cat urls
@@ -32,7 +34,7 @@ public class Finder {
 		}
 	}
 	
-	public static void wakeBot() throws IOException, SQLException {
+	public void wakeBot() throws IOException, SQLException {
 		Properties redditProperties = loadProperties(REDDIT_PROP_FILE_NAME);
 		
 		// Initialize REST Client
@@ -49,10 +51,29 @@ public class Finder {
 			user.connect();
 			logger.info("Successfully connected to reddit bot");
 			
-			/* TODO: Get newest posts */
-			/* TODO: If anyone says "It's a kitty!" respond to them */
+			logger.info("Getting user comments...");
+			if (lastSeenCommentId == null) {
+				/* If the bot has not run yet, get the latest comment to use as a marker */
+				List<Comment> comments = RedditAPIWrapper.getNewestComments(restClient, user, RedditAPIWrapper.Subreddit.CATS, 1);
+				lastSeenCommentId = comments.get(0).getFullName();
+				logger.debug("Initial comment landmark: " + lastSeenCommentId);
+			} else {
+				/* Get the latest batch of comments made since our bot last woke up */
+				List<Comment> comments = RedditAPIWrapper.getNewestCommentsAfter(restClient, user, RedditAPIWrapper.Subreddit.CATS, lastSeenCommentId);
+				logger.debug("Got comments: " + comments);
 			
-			/* TODO: For any of the bots posts with >5 karma, add the image to db */
+				/* TODO: If anyone says "It's a kitty!" respond to them */
+				logger.info("Looking for key phrase...");
+				
+				/* TODO: For any of the bots posts with positive karma, add the image to db */
+				logger.info("Storing images...");
+				
+				/* The last comment id should be stored for next call */
+				if (comments.size() > 0) {
+					lastSeenCommentId = comments.get(0).getFullName();
+					logger.debug("Updated comment landmark: " + lastSeenCommentId);
+				}
+			}
 			
 		} catch (Exception e) {
 			logger.error(e);
