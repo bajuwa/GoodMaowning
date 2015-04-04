@@ -12,7 +12,6 @@ import java.lang.IllegalArgumentException;
 
 import com.github.jreddit.entity.*;
 import com.github.jreddit.action.*;
-import com.github.jreddit.retrieval.*;
 import com.github.jreddit.utils.restclient.*;
 
 /**
@@ -47,6 +46,7 @@ public class Finder {
 			redditProperties.getProperty("bot.username"), 
 			redditProperties.getProperty("bot.password")
 		);
+		
 		try {
 			user.connect();
 			logger.info("Successfully connected to reddit bot");
@@ -58,24 +58,16 @@ public class Finder {
 				lastSeenCommentId = comments.get(0).getFullName();
 				logger.debug("Initial comment landmark: " + lastSeenCommentId);
 			} else {
-				/* Get the latest batch of comments made since our bot last woke up */
-				List<Comment> comments = RedditAPIWrapper.getNewestCommentsBefore(restClient, user, RedditAPIWrapper.Subreddit.CATS, lastSeenCommentId, 200);
-				logger.debug("Got comments: " + comments);
-			
-				logger.info("Looking for key phrases...");
+				/* Handle any new comments that are tagging reddit images in /r/cats */
 				List<String> linkIds = new ArrayList<String>();
+				List<Comment> comments = getKeyphrasedComments(restClient, user);
 				for (Comment comment : comments) {
-					/* TODO: If anyone says "It's a kitty!" respond to them and mark the url for storage */
-					if (comment.getBody().equals(BOT_KEYPHRASE)) {
-						logger.info(String.format("Comment <%s> with text body <%s> matched keyphrase [%s]", comment.getFullName(), comment.getBody(), BOT_KEYPHRASE));
-						
-						/* TODO: Move the comment message body formatting to a separate class */
-						SubmitActions reply = new SubmitActions(restClient, user);
-						reply.comment(comment.getFullName(), "Yes, it is!");
-						
-						/* TODO: JReddit doesn't seem to support getting the link url yet */
-						linkIds.add(comment.getLinkId());
-					}
+					/* TODO: Move the comment message body formatting to a separate class */
+					SubmitActions reply = new SubmitActions(restClient, user);
+					reply.comment(comment.getFullName(), "Yes, it is!");
+					
+					/* TODO: JReddit doesn't seem to support getting the link url yet */
+					linkIds.add(comment.getLinkId());
 				}
 						
 				/* Add any urls that were commented on to the image db */
@@ -91,17 +83,36 @@ public class Finder {
 						}
 					}
 				}
-				
-				/* The last comment id should be stored for next call */
-				if (comments.size() > 0) {
-					lastSeenCommentId = comments.get(0).getFullName();
-					logger.debug("Updated comment landmark: " + lastSeenCommentId);
-				}
 			}
 			
 		} catch (Exception e) {
 			logger.error(e);
 		}
+	}
+	
+	/**
+	 * Finds all comments since our last search that match our keyphrase.
+	 */
+	private List<Comment> getKeyphrasedComments(RestClient client, User user) {
+		List<Comment> comments = RedditAPIWrapper.getNewestCommentsBefore(client, user, RedditAPIWrapper.Subreddit.CATS, lastSeenCommentId, 1000);
+		logger.debug("Got comments: " + comments);
+	
+		logger.info("Looking for key phrases...");
+		List<Comment> keyphraseComments = new ArrayList<Comment>();
+		for (Comment comment : comments) {
+			if (comment.getBody().equals(BOT_KEYPHRASE)) {
+				logger.info(String.format("Comment <%s> with text body <%s> matched keyphrase [%s]", comment.getFullName(), comment.getBody(), BOT_KEYPHRASE));
+				keyphraseComments.add(comment);
+			}
+		}
+				
+		/* The last comment id should be stored for next call */
+		if (comments.size() > 0) {
+			lastSeenCommentId = comments.get(0).getFullName();
+			logger.debug("Updated comment landmark: " + lastSeenCommentId);
+		}
+		
+		return keyphraseComments;
 	}
 	
 	/* TODO: Move to a reusable utils class */
