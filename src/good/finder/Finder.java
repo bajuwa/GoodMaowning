@@ -9,6 +9,7 @@ import java.util.*;
 import java.io.*;
 import java.sql.SQLException;
 import com.github.jreddit.entity.*;
+import com.github.jreddit.action.*;
 import com.github.jreddit.utils.restclient.*;
 
 /**
@@ -18,6 +19,7 @@ public class Finder {
 	private static final Logger logger = Logger.getLogger(Finder.class);
 	
 	private static final String REDDIT_PROP_FILE_NAME = "reddit.properties";
+	private static final String BOT_KEYPHRASE = "It's a kitty!";
 	
 	private String lastSeenCommentId;
 
@@ -59,12 +61,20 @@ public class Finder {
 				logger.debug("Initial comment landmark: " + lastSeenCommentId);
 			} else {
 				/* Get the latest batch of comments made since our bot last woke up */
-				List<Comment> comments = RedditAPIWrapper.getNewestCommentsAfter(restClient, user, RedditAPIWrapper.Subreddit.CATS, lastSeenCommentId);
+				List<Comment> comments = RedditAPIWrapper.getNewestCommentsBefore(restClient, user, RedditAPIWrapper.Subreddit.CATS, lastSeenCommentId, 200);
 				logger.debug("Got comments: " + comments);
 			
-				/* TODO: If anyone says "It's a kitty!" respond to them */
-				logger.info("Looking for key phrase...");
-				
+				logger.info("Looking for key phrases...");
+				for (Comment comment : comments) {
+					/* TODO: If anyone says "It's a kitty!" respond to them */
+					if (comment.getBody().equals(BOT_KEYPHRASE)) {
+						logger.info(String.format("Comment <%s> with text body <%s> matched keyphrase [%s]", comment.getFullName(), comment.getBody(), BOT_KEYPHRASE));
+						
+						SubmitActions reply = new SubmitActions(restClient, user);
+						reply.comment(comment.getFullName(), "Yes, it is!");
+					}
+				}
+						
 				/* TODO: For any of the bots posts with positive karma, add the image to db */
 				logger.info("Storing images...");
 				

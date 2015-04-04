@@ -92,11 +92,11 @@ public class RedditAPIWrapper {
 		
 	}
 	
-	public static List<Comment> getNewestCommentsAfter(RestClient client, User user, Subreddit sub, String afterId) {
+	public static List<Comment> getNewestCommentsBefore(RestClient client, User user, Subreddit sub, String beforeId, int limit) {
 		return (new Comments(client, user)).parseBreadth(
 			String.format(
-				"/r/%s/comments.json?after=%s&sort=new",
-				sub, afterId
+				"/r/%s/comments.json?before=%s&limit=%d&sort=new",
+				sub, beforeId, limit
 			)
 		);
 	}
