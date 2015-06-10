@@ -17,3 +17,20 @@ src/database.properties
 Upgrades
 ========
 If you are upgrading from previous versions, make sure to upgrade each of your databases as well.  To do so, run each of the v#_#_DB_NAME_upgrade.sql files in the develop/ folder that have a version number AFTER your old version, up to and INCLUDING your new version.
+
+
+How to Run GoodMaowning!
+========================
+Once you have the above requirements set up and configured, run the following commands from the main git repository folder (named 'GoodMaowning' by default):
+$ ant 					# This does the initial build of the project, you only need to run this once on setup, and each time you update the codebase
+$ ant run -Darguments=component_name 	# This runs an instance of GoodMaowning under any of the following components: maower, finder, bot
+
+Components
+==========
+Maower:
+The maower is in charge of sending the good maowning emails, ie "Maowing" at the subscribers.  This component does reads on the images and subscribers databases, while also updating the subscribers database when it successfully sends them an email.
+Finder:
+The finder is in charge of scouring the internet for cat images to populate the images database.  The only way of 'finding' images is currently through scrapping submissions on purely cat-related subreddits and adding any new images to the database.
+Bot:
+The reddit bot takes user-driven suggestions for cat images and adds them to the images database.  Any user that types the phrase "It's a kitty!" from the comments of an imgur post will be responded to (though adding to db is still in development)
+
