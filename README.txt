@@ -1,6 +1,7 @@
 Good Maowning!
 ==============
-A simple java project that will send an email to subscribers each morning with a cute cat picture.  
+A simple java project that will send an email to subscribers every day with a cute cat picture.
+Subscribers must be manually added to the system, but can have configurable subscription times (based off the timezone of server).  Images can be dynamically added to the system via reddit.  
 
 
 Requirements
@@ -12,10 +13,12 @@ ant 1.9.4
 Additional properties files are also required (samples included, must be renamed to the following and filled out with your own information):
 src/email.properties
 src/database.properties
+src/reddit.properties
 
 
-Upgrades
-========
+Setting Up Databases
+====================
+In order to run any of the components, some databases are required.  In order to create the basic database files (with empty/minimal tables) run each 'create.sql' script in the develop/ folder.
 If you are upgrading from previous versions, make sure to upgrade each of your databases as well.  To do so, run each of the v#_#_DB_NAME_upgrade.sql files in the develop/ folder that have a version number AFTER your old version, up to and INCLUDING your new version.
 
 
@@ -23,7 +26,7 @@ How to Run GoodMaowning!
 ========================
 Once you have the above requirements set up and configured, run the following commands from the main git repository folder (named 'GoodMaowning' by default):
 $ ant 					# This does the initial build of the project, you only need to run this once on setup, and each time you update the codebase
-$ ant run -Darguments=component_name 	# This runs an instance of GoodMaowning under any of the following components: maower, finder, bot
+$ ant -Dcomponent=component_name run 	# This runs an instance of GoodMaowning under any of the following components: maower, finder, bot
 
 Components
 ==========
