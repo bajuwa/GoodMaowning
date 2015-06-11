@@ -18,20 +18,21 @@ public class ImageDAO extends BasicDAO {
 		return GMDatabase.IMAGES;
 	}
 	
+	//TODO: add category
 	public void addUrls(List<String> urls) throws IOException, SQLException {
 		for (String url : urls) {
-			this.addUrl(url);
+			this.addUrl(url, null);
 		}
 	}
 	
-	public void addUrl(String url) throws IOException, SQLException {
-		logger.info("Adding url: " + url);
+	public void addUrl(String url, String category) throws IOException, SQLException {
+		logger.info("Adding url: " + url + ", with category: " + category);
 		/* TODO: do some sanitization of the url */
 		
 		try (Statement stmt = dbConnection.createStatement()) {
 			stmt.executeUpdate(String.format(
-				"INSERT OR IGNORE INTO images(url) " + 
-				"values('%s'); ",
+				"INSERT OR IGNORE INTO images(url, category) " + 
+				"values('%s', '%s'); ",
 				url
 			));
 		}

@@ -6,6 +6,8 @@ import good.data.ImageDAO;
 import good.finder.RedditAPIWrapper;
 
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.io.*;
 import java.sql.SQLException;
 import java.lang.IllegalArgumentException;
@@ -21,7 +23,7 @@ public class Finder {
 	private static final Logger logger = Logger.getLogger(Finder.class);
 	
 	private static final String REDDIT_PROP_FILE_NAME = "reddit.properties";
-	private static final String BOT_KEYPHRASE = "It's a kitty!";
+	private static final String BOT_KEYPHRASE = "It's a ([a-zA-Z\\-]+) kitty!";
 	
 	private String lastSeenCommentId;
 
@@ -60,14 +62,15 @@ public class Finder {
 			} else {
 				/* Handle any new comments that are tagging reddit images in /r/cats */
 				List<String> linkIds = new ArrayList<String>();
-				List<Comment> comments = getKeyphrasedComments(restClient, user);
-				for (Comment comment : comments) {
+				List<GMImage> gmImages = getKeyphrasedComments(restClient, user);
+				for (GMImage gmImage : gmImages) {
 					/* TODO: Move the comment message body formatting to a separate class */
 					SubmitActions reply = new SubmitActions(restClient, user);
-					reply.comment(comment.getFullName(), "Yes, it is!");
+					String message = String.format("A %s kitty, eh?  I'll keep that in mind!", gmImage.tag);
+					reply.comment(gmImage.comment.getFullName(), message);
 					
 					/* TODO: JReddit doesn't seem to support getting the link url yet */
-					linkIds.add(comment.getLinkId());
+					linkIds.add(gmImage.comment.getLinkId());
 				}
 						
 				/* Add any urls that were commented on to the image db */
@@ -75,9 +78,13 @@ public class Finder {
 					logger.info("Storing images...");
 					ImageDAO imageDao = new ImageDAO();
 					List<Submission> submissions = RedditAPIWrapper.getSubmissionsByIds(restClient, user, linkIds);
-					for (Submission submission : submissions) {
+					// TODO: I really hope this api returns them in the same order that is asked....
+					for (int i = 0; i < submissions.size(); i++) {
 						try {
-							imageDao.addUrl(RedditAPIWrapper.formatImgurUrl(submission.getURL()));
+							imageDao.addUrl(
+								RedditAPIWrapper.formatImgurUrl(submissions.get(i).getURL()),
+								gmImages.get(i).tag
+							);
 						} catch (IllegalArgumentException e) {
 							logger.warn(e);
 						}
@@ -91,18 +98,21 @@ public class Finder {
 	}
 	
 	/**
-	 * Finds all comments since our last search that match our keyphrase.
+	 * Finds all comments since our last search that match our keyphrase, while also returning the nested 'tag' within the keyphrase.
 	 */
-	private List<Comment> getKeyphrasedComments(RestClient client, User user) {
+	private List<GMImage> getKeyphrasedComments(RestClient client, User user) {
 		List<Comment> comments = RedditAPIWrapper.getNewestCommentsBefore(client, user, RedditAPIWrapper.Subreddit.CATS, lastSeenCommentId, 1000);
 		logger.debug("Got comments: " + comments);
 	
 		logger.info("Looking for key phrases...");
-		List<Comment> keyphraseComments = new ArrayList<Comment>();
+		List<GMImage> keyphraseComments = new ArrayList<GMImage>();
 		for (Comment comment : comments) {
-			if (comment.getBody().equals(BOT_KEYPHRASE)) {
-				logger.info(String.format("Comment <%s> with text body <%s> matched keyphrase [%s]", comment.getFullName(), comment.getBody(), BOT_KEYPHRASE));
-				keyphraseComments.add(comment);
+			Pattern kittyPattern = Pattern.compile(BOT_KEYPHRASE);
+			Matcher kittyMatcher = kittyPattern.matcher(comment.getBody());
+			if (kittyMatcher.find()) {
+				String tag = kittyMatcher.group(1).toLowerCase();
+				logger.info(String.format("Comment <%s> with text body <%s> matched keyphrase with tag <%s>", comment.getFullName(), comment.getBody(), tag));
+				keyphraseComments.add(new GMImage(comment, tag));
 			}
 		}
 				
@@ -127,5 +137,15 @@ public class Finder {
 		}
 		
 		return propToLoad;
+	}
+
+	private class GMImage {
+		public Comment comment;
+		public String tag;
+
+		public GMImage(Comment c, String t) {
+			this.comment = c;
+			this.tag = t;
+		}
 	}
 }

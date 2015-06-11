@@ -1,6 +1,10 @@
 email.properties
 database.properties
 reddit.properties
+
+*.swp
+
 log/
 build/
 resources/
+data/

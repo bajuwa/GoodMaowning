@@ -16,6 +16,7 @@ public class GoodMaowning {
 	private static final int DEFAULT_FINDER_SLEEP_MILLISECONDS = 60 * 60 * 1000;
 	
 	public static void main(String[] args) throws InterruptedException {
+		logger.debug("Received argument: " + Arrays.toString(args));
 		switch (args[0]) {
 			case "maower":
 				runMaower();
