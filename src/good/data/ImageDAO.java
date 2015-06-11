@@ -31,10 +31,13 @@ public class ImageDAO extends BasicDAO {
 		
 		try (Statement stmt = dbConnection.createStatement()) {
 			stmt.executeUpdate(String.format(
-				"INSERT OR IGNORE INTO images(url, category) " + 
-				"values('%s', '%s'); ",
+				"INSERT OR IGNORE INTO images(url) " + 
+				"values('%s'); " + 
+				"INSERT OR IGNORE INTO categories(url_id, category) " +
+				"SELECT id, '%s' FROM images WHERE url = '%s'; ",
 				url,
-				category
+				category,
+				url
 			));
 		}
 	}

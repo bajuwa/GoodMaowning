@@ -4,11 +4,16 @@ PRAGMA foreign_keys = ON;
 
 BEGIN TRANSACTION;
 
--- TODO: separate the categories in to a many (category) to one (url) relationship
 CREATE TABLE images (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	url TEXT NOT NULL,
-	category TEXT DEFAULT 'cute'
+	url TEXT NOT NULL
+);
+
+CREATE TABLE categories (
+	url_id INTEGER,
+	category TEXT DEFAULT 'cute',
+	PRIMARY KEY (url_id, category),
+	FOREIGN KEY (url_id) REFERENCES images(id)
 );
 
 COMMIT;
