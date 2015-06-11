@@ -23,7 +23,7 @@ public class Finder {
 	private static final Logger logger = Logger.getLogger(Finder.class);
 	
 	private static final String REDDIT_PROP_FILE_NAME = "reddit.properties";
-	private static final String BOT_KEYPHRASE = "It's a ([a-zA-Z\\-]+) kitty!";
+	private static final String BOT_KEYPHRASE = "It's an{0,1} ([a-zA-Z\\-]+) kitty!";
 	
 	private String lastSeenCommentId;
 
@@ -66,7 +66,11 @@ public class Finder {
 				for (GMImage gmImage : gmImages) {
 					/* TODO: Move the comment message body formatting to a separate class */
 					SubmitActions reply = new SubmitActions(restClient, user);
-					String message = String.format("A %s kitty, eh?  I'll keep that in mind!", gmImage.tag);
+					String message = String.format(
+						"A%s %s kitty, eh?  I'll keep that in mind!", 
+						isVowel(gmImage.tag.charAt(0)) ? "n" : "",
+						gmImage.tag
+					);
 					reply.comment(gmImage.comment.getFullName(), message);
 					
 					/* TODO: JReddit doesn't seem to support getting the link url yet */
@@ -137,6 +141,10 @@ public class Finder {
 		}
 		
 		return propToLoad;
+	}
+
+	private boolean isVowel(char c) {
+		return "aeiou".indexOf(Character.toLowerCase(c)) > 0;
 	}
 
 	private class GMImage {
