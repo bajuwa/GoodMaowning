@@ -1,5 +1,5 @@
-Good Maowning!
-==============
+Good Maowning! v0.2-dev
+=======================
 A simple java project that will send an email to subscribers every day with a cute cat picture.
 Subscribers must be manually added to the system, but can have configurable subscription times (based off the timezone of server).  Images can be dynamically added to the system via reddit.  
 
