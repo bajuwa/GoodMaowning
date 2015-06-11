@@ -33,7 +33,8 @@ public class ImageDAO extends BasicDAO {
 			stmt.executeUpdate(String.format(
 				"INSERT OR IGNORE INTO images(url, category) " + 
 				"values('%s', '%s'); ",
-				url
+				url,
+				category
 			));
 		}
 	}
