@@ -73,7 +73,7 @@ public class Finder {
 					String message = String.format(
 						"A%s %s kitty, eh?  I'll keep that in mind!", 
 						isVowel(categoriesStr.charAt(0)) ? "n" : "",
-						categoriesStr.join(", ")
+						String.join(", ", commentImagePair.right.categories)
 					);
 					reply.comment(commentImagePair.left.getFullName(), message);
 					
