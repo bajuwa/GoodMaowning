@@ -26,17 +26,9 @@ public class Finder {
 	
 	private static final String REDDIT_PROP_FILE_NAME = "reddit.properties";
 	private static final String BOT_KEYPHRASE = "It's an{0,1} ([a-zA-Z\\- ]+) kitty!";
-	
-	private String lastSeenCommentId;
 
-	/**
-	 * Scans through reddit image submissions to find potential cat urls
-	 */
-	public static void findUrls(RedditAPIWrapper.Subreddit sub, RedditAPIWrapper.SubCategory category, RedditAPIWrapper.Timespan time, int numOfEntries) throws IOException, SQLException {
-		/* TODO: Filter out 'banned' words that often signal poor pictures (RIP, etc) */
-		// TODO: Don't even think there should be an arbitrarily categorized set of urls
-		//(new ImageDAO()).addImages(RedditAPIWrapper.getSubmissions(sub, category, time, numOfEntries));
-	}
+	// Keep track of the last seen comment so we only query for new, unseen comments every iteration	
+	private String lastSeenCommentId;
 	
 	public void wakeBot() throws IOException, SQLException {
 		Properties redditProperties = loadProperties(REDDIT_PROP_FILE_NAME);
@@ -45,7 +37,7 @@ public class Finder {
 		RestClient restClient = new HttpRestClient();
 		restClient.setUserAgent("GoodMaowning/0.2 by bajuwa");
 
-		// Connect the user 
+		// Log in using the bot account
 		User user = new User(
 			restClient, 
 			redditProperties.getProperty("bot.username"), 
@@ -63,7 +55,7 @@ public class Finder {
 				lastSeenCommentId = comments.get(0).getFullName();
 				logger.debug("Initial comment landmark: " + lastSeenCommentId);
 			} else {
-				/* Handle any new comments that are tagging reddit images in /r/cats */
+				/* Handle any new comments that are categorizing reddit images via the specified keyphrase */
 				List<String> linkIds = new ArrayList<String>();
 				List<Pair<Comment, GMImage>> commentImagePairs = getKeyphrasedComments(restClient, user);
 				for (Pair<Comment, GMImage> commentImagePair : commentImagePairs) {

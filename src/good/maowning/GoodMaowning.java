@@ -21,9 +21,6 @@ public class GoodMaowning {
 			case "maower":
 				runMaower();
 				break;
-			case "finder":
-				runFinder();
-				break;
 			case "bot":
 				runBot();
 				break;
@@ -55,44 +52,7 @@ public class GoodMaowning {
 			Thread.sleep(timeToSleep);
 		}
 	}
-	
-	private static void runFinder() throws InterruptedException {
-		logger.info("Starting Finder...");
-		
-		/* This program will run continuously until killed */
-		while (true) {
-			long startTime = System.currentTimeMillis();
-		
-		
-			/* Call the Finder to gather images */
-			/* TODO: Limit how often requests are being made */
-			logger.info("Finding...");
-			try {
-				Finder.findUrls(
-					Subreddit.CATS, 
-					SubCategory.HOT, 
-					Timespan.HOUR, 
-					5
-				);
-				Finder.findUrls(
-					Subreddit.CATS, 
-					SubCategory.TOP, 
-					Timespan.DAY, 
-					10
-				);
-			} catch (Exception e) {
-				logger.error("Encountered error during Finding: ");
-				logger.error(e);
-			}
-			
-			/* Sleep for the remainder of our cycle time (if any time remains) */
-			long totalTimeSpent = System.currentTimeMillis() - startTime;
-			long timeToSleep = Math.max(0, DEFAULT_FINDER_SLEEP_MILLISECONDS - totalTimeSpent);
-			logger.info(String.format("Sleeping for [%d] milliseconds...", timeToSleep));
-			Thread.sleep(timeToSleep);
-		}
-	}
-	
+
 	private static void runBot() throws InterruptedException {
 		logger.info("Starting Bot...");
 		Finder finder = new Finder();
