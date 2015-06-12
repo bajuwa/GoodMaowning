@@ -69,11 +69,11 @@ public class Finder {
 				for (Pair<Comment, GMImage> commentImagePair : commentImagePairs) {
 					/* TODO: Move the comment message body formatting to a separate class */
 					SubmitActions reply = new SubmitActions(restClient, user);
-					String categoriesStr = StringUtils.join(commentImagePair.right.categories);
+					String categoriesStr = String.join(", ", commentImagePair.right.categories);
 					String message = String.format(
 						"A%s %s kitty, eh?  I'll keep that in mind!", 
 						isVowel(categoriesStr.charAt(0)) ? "n" : "",
-						String.join(", ", commentImagePair.right.categories)
+						categoriesStr	
 					);
 					reply.comment(commentImagePair.left.getFullName(), message);
 					
