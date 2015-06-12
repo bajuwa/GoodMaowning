@@ -1,12 +1,14 @@
 package good.data;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
 import java.util.*;
 import java.sql.*;
 
 import good.data.BasicDAO;
+import good.data.GMImage;
 
 public class ImageDAO extends BasicDAO {
 
@@ -18,27 +20,35 @@ public class ImageDAO extends BasicDAO {
 		return GMDatabase.IMAGES;
 	}
 	
-	//TODO: add category
-	public void addUrls(List<String> urls) throws IOException, SQLException {
-		for (String url : urls) {
-			this.addUrl(url, null);
+	//TODO: optimize to iteratively add to a sqlite batch and then evaluate them all (instead of evaluating one by one) 
+	public void addImages(List<GMImage> gmImages) throws IOException, SQLException {
+		for (GMImage gmImage : gmImages) {
+			this.addImage(gmImage);
 		}
 	}
 	
-	public void addUrl(String url, String category) throws IOException, SQLException {
-		logger.info("Adding url: " + url + ", with category: " + category);
+	public void addImage(GMImage gmImage) throws IOException, SQLException {
+		logger.info("Adding url: " + gmImage.url + ", with categories: " + StringUtils.join(gmImage.categories));
 		/* TODO: do some sanitization of the url */
 		
 		try (Statement stmt = dbConnection.createStatement()) {
-			stmt.executeUpdate(String.format(
+			stmt.addBatch(String.format(
 				"INSERT OR IGNORE INTO images(url) " + 
-				"values('%s'); " + 
-				"INSERT OR IGNORE INTO categories(url_id, category) " +
-				"SELECT id, '%s' FROM images WHERE url = '%s'; ",
-				url,
-				category,
-				url
+				"values('%s'); ",
+				gmImage.url
 			));
+			for (String category : gmImage.categories) {
+				stmt.addBatch(String.format(
+					"INSERT OR IGNORE INTO categories(url_id, category) " +
+					"SELECT id, '%s' FROM images WHERE url = '%s'; ",
+					category,
+					gmImage.url
+				));
+			}
+			stmt.executeBatch();
+		} catch (Exception e) {
+			logger.error("Unable to insert url with categories");
+			logger.error(e);
 		}
 	}
 	
