@@ -25,7 +25,7 @@ public class Finder {
 	private static final Logger logger = Logger.getLogger(Finder.class);
 	
 	private static final String REDDIT_PROP_FILE_NAME = "reddit.properties";
-	private static final String BOT_KEYPHRASE = "It's an{0,1} ([a-zA-Z\\-]+) kitty!";
+	private static final String BOT_KEYPHRASE = "It's an{0,1} ([a-zA-Z\\- ]+) kitty!";
 	
 	private String lastSeenCommentId;
 
